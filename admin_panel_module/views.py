@@ -1,0 +1,54 @@
+from rest_framework import generics, permissions
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import ListAPIView, DestroyAPIView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
+from django.contrib.auth import get_user_model
+
+from admin_panel_module.serializers import AdminUserListSerializer
+from product_module.models import Product
+from product_module.serializers import ProductSerializer
+
+User = get_user_model()
+
+
+class AdminDashboardSummaryView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        total_users = User.objects.count()
+        total_products = Product.objects.count()
+
+        return Response({
+            "total_users": total_users,
+            "total_products": total_products
+        })
+
+
+class AdminUserListView(ListAPIView):
+    queryset = User.objects.all().order_by("-date_joined")
+    serializer_class = AdminUserListSerializer
+    permission_classes = [IsAdminUser]
+
+
+class AdminUserDeleteView(DestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    def perform_destroy(self, instance):
+        if instance.is_staff or instance.is_superuser:
+            raise PermissionDenied("نمی‌توان ادمین یا سوپر یوزر را حذف کرد.")
+        instance.delete()
+
+
+class ProductListCreateView(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAdminUser]  # فقط ادمین‌ها دسترسی دارند
+
+
+class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAdminUser]
