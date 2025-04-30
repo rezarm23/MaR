@@ -77,47 +77,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'phone_number', 'password']
 
-    def validate(self, data):
-        errors = {}
-        email = data.get('email')
-        phone_number = data.get('phone_number')
-        username = data.get('username')
-        password = data.get('password')
+    def validate_email(self, value):
+        if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", value):
+            raise serializers.ValidationError("فرمت ایمیل معتبر نیست.")
+        return validate_unique_field(User, "email", value)
 
-        if email:
-            if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
-                errors['email'] = "فرمت ایمیل معتبر نیست."
-            else:
-                try:
-                    validate_unique_field(User, "email", email)
-                except ValidationError as e:
-                    errors['email'] = str(e)
+    def validate_phone_number(self, value):
+        if not re.fullmatch(r"^09\d{9}$", str(value)):
+            raise serializers.ValidationError("شماره باید 11 رقمی و با 09 شروع شود.")
+        return validate_unique_field(User, "phone_number", value)
 
-        if phone_number:
-            if not re.fullmatch(r"^09\d{9}$", str(phone_number)):
-                errors['phone_number'] = "شماره باید 11 رقمی و با 09 شروع شود."
-            else:
-                try:
-                    validate_unique_field(User, "phone_number", phone_number)
-                except ValidationError as e:
-                    errors['phone_number'] = str(e)
+    def validate_username(self, value):
+        return validate_unique_field(User, "username", value)
 
-        if username:
-            try:
-                validate_unique_field(User, "username", username)
-            except ValidationError as e:
-                errors['username'] = str(e)
-
-        if password:
-            try:
-                validate_password_strength(password)
-            except ValidationError as e:
-                errors['password'] = str(e)
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return data
+    def validate_password(self, value):
+        try:
+            return validate_password_strength(value)
+        except ValidationError as e:
+            raise serializers.ValidationError(str(e))
 
     def create(self, validated_data):
         password = validated_data.pop('password')
