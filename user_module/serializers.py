@@ -93,6 +93,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         return validate_unique_field(User, "phone_number", value)
 
     def validate_username(self, value):
+        if not value:
+            raise serializers.ValidationError("نام کاربری باید وارد شود.")
         return validate_unique_field(User, "username", value)
 
     def validate_password(self, value):

@@ -4,6 +4,7 @@ from rest_framework import status as drf_status
 
 
 def custom_exception_handler(exc, context):
+    print("🚨 custom_exception_handler CALLED")
     response = exception_handler(exc, context)
 
     if response is not None:
@@ -12,15 +13,7 @@ def custom_exception_handler(exc, context):
         if isinstance(response.data, dict):
             for key, value in response.data.items():
                 if isinstance(value, list):
-                    for item in value:
-                        if key == 'email':
-                            error_messages.append(f"فرمت ایمیل معتبر نیست.")
-                        elif key == 'phone_number':
-                            error_messages.append(f"شماره باید 11 رقمی و با 09 شروع شود.")
-                        elif key == 'password':
-                            error_messages.append(f"رمز عبور باید حداقل ۸ کاراکتر باشد.")
-                        else:
-                            error_messages.append(str(item))
+                    error_messages.extend(value)
                 else:
                     error_messages.append(str(value))
 
@@ -29,7 +22,6 @@ def custom_exception_handler(exc, context):
             'message': "خطایی رخ داده است." if not error_messages else error_messages[0],
             'errors': error_messages
         }, status=response.status_code)
-
 
     return Response({
         'success': 0,
