@@ -81,6 +81,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", value):
             raise serializers.ValidationError("فرمت ایمیل معتبر نیست.")
+        if not value:
+            raise serializers.ValidationError("ایمیل باید وارد شود.")
         return validate_unique_field(User, "email", value)
 
     def validate_phone_number(self, value):
