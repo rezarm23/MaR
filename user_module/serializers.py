@@ -71,6 +71,9 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    phone_number = serializers.CharField(required=True)
+
     class Meta:
         model = User
         fields = ['username', 'email', 'phone_number', 'password']

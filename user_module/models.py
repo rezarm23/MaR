@@ -9,7 +9,7 @@ class User(AbstractUser):
     activation_code_expiration = models.DateTimeField(null=True, blank=True)
     about_user = models.TextField(null=True, blank=True, verbose_name='درباره شخص')
     address = models.TextField(null=True, blank=True, verbose_name='آدرس')
-    phone_number = models.CharField(null=True, blank=True)
+    phone_number = models.CharField(null=False, blank=False, default='09100000000')
 
     def save(self, *args, **kwargs):
         if not self.activation_code:
