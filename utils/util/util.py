@@ -34,14 +34,14 @@ def validate_login_field(model, field_name, value):
 
 
 def send_activation_email(user):
-    activation_link = f"http://localhost:3000/user/activate/{user.activation_code}/"
+    activation_link = f"http://mar-9oop.onrender.com/user/activate/{user.activation_code}/"
     subject = "فعالسازی حساب کاربری"
     message = f"برای فعالسازی حساب خود روی لینک زیر کلیک کنید:\n{activation_link}"
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
 def send_reset_password_email(user):
-    activation_link = f"http://localhost:3000/user/reset-pass/{user.activation_code}/"
+    activation_link = f"http://mar-9oop.onrender.com/user/reset-pass/{user.activation_code}/"
     subject = "تغییر رمز عبور حساب کاربری"
     message = f"برای تغییر رمز عبور حساب خود روی لینک زیر کلیک کنید:\n{activation_link}"
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
