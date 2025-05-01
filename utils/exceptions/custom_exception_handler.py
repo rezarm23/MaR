@@ -4,32 +4,35 @@ from rest_framework import status as drf_status
 
 
 def custom_exception_handler(exc, context):
-    print("🚨 custom_exception_handler CALLED")
-    # گرفتن پاسخ اصلی
     response = exception_handler(exc, context)
 
     if response is not None:
-        # اینجا ما به جای اینکه خطاها رو از دیکشنری فیلدها جدا کنیم، همه رو توی یک لیست جمع می‌کنیم
         error_messages = []
 
-        # بررسی اگر داده‌ها دیکشنری باشن
         if isinstance(response.data, dict):
             for key, value in response.data.items():
                 if isinstance(value, list):
-                    error_messages.extend(value)  # اگر خطاها در قالب لیست هستن، اون‌ها رو اضافه می‌کنیم
+                    for item in value:
+                        if key == 'email':
+                            error_messages.append(f"فرمت ایمیل معتبر نیست.")
+                        elif key == 'phone_number':
+                            error_messages.append(f"شماره باید 11 رقمی و با 09 شروع شود.")
+                        elif key == 'password':
+                            error_messages.append(f"رمز عبور باید حداقل ۸ کاراکتر باشد.")
+                        else:
+                            error_messages.append(str(item))
                 else:
-                    error_messages.append(str(value))  # یا هر خطا رو جداگانه اضافه می‌کنیم
+                    error_messages.append(str(value))
 
-        # ارسال پاسخ با ساختار جدید
         return Response({
             'success': 0,
-            'message': "خطایی رخ داده است." if not error_messages else error_messages[0],  # اولین پیام خطا
-            'errors': error_messages  # لیست خطاها رو در یک لیست بر می‌گردونیم
+            'message': "خطایی رخ داده است." if not error_messages else error_messages[0],
+            'errors': error_messages
         }, status=response.status_code)
 
-    # اگر پاسخ اصلی نداشته باشیم، یک خطای عمومی برمی‌گردونیم
+
     return Response({
         'success': 0,
         'message': 'خطای ناشناخته. لطفاً بعداً تلاش کنید.',
-        'errors': [str(exc)]  # جزئیات استثنا را بر می‌گردانیم
+        'errors': [str(exc)]
     }, status=drf_status.HTTP_500_INTERNAL_SERVER_ERROR)
