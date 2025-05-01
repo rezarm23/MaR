@@ -86,6 +86,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_phone_number(self, value):
         if not re.fullmatch(r"^09\d{9}$", str(value)):
             raise serializers.ValidationError("شماره باید 11 رقمی و با 09 شروع شود.")
+        if not value:
+            raise serializers.ValidationError("شماره تلفن باید وارد شود.")
         return validate_unique_field(User, "phone_number", value)
 
     def validate_username(self, value):
