@@ -142,7 +142,7 @@ REST_FRAMEWORK = {
     # ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.SearchFilter'],
-    'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler'
 }
 
 SPECTACULAR_SETTINGS = {
