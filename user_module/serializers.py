@@ -1,15 +1,13 @@
 import re
 from datetime import timedelta
 from django.contrib.auth import authenticate
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from utils.utils import validate_password_strength, validate_unique_field, validate_login_field, send_activation_email
+from utils.util.util import validate_password_strength, validate_unique_field, send_activation_email
 from .models import User
 
 

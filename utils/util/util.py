@@ -45,3 +45,5 @@ def send_reset_password_email(user):
     subject = "تغییر رمز عبور حساب کاربری"
     message = f"برای تغییر رمز عبور حساب خود روی لینک زیر کلیک کنید:\n{activation_link}"
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+

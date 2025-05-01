@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from utils.utils import send_reset_password_email
+from utils.util.util import send_reset_password_email
 from .models import User
 from rest_framework.response import Response
 from rest_framework import status
@@ -39,7 +39,7 @@ class ChangePasswordAPIView(APIView):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response({"message": "رمز عبور با موفقیت تغییر کرد."}, status.HTTP_200_OK)
+            return Response({"success": 1, "message": "رمز عبور با موفقیت تغییر کرد."}, status.HTTP_200_OK)
 
 
 class RegisterAPIView(APIView):
@@ -81,7 +81,7 @@ class ActivateUserAPIView(APIView):
         user.activation_code_expiration = None
         user.save()
 
-        return Response({"detail": "حساب کاربری با موفقیت فعال شد."}, status=status.HTTP_200_OK)
+        return Response({"success": 1, "detail": "حساب کاربری با موفقیت فعال شد."}, status=status.HTTP_200_OK)
 
 
 class LoginAPIView(APIView):
@@ -92,10 +92,10 @@ class LoginAPIView(APIView):
         user = serializer.validated_data['user']
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
+        return Response({"success": 1,
+                         'refresh': str(refresh),
+                         'access': str(refresh.access_token),
+                         }, status=status.HTTP_200_OK)
 
 
 class ForgetPasswordAPIView(APIView):
@@ -112,10 +112,10 @@ class ForgetPasswordAPIView(APIView):
         user.save()
         send_reset_password_email(user)
 
-        return Response({
-            'detail': 'ایمیل بازیابی رمز عبور ارسال شد.',
-            'activation_code': user.activation_code
-        }, status=status.HTTP_200_OK)
+        return Response({"success": 1,
+                         'detail': 'ایمیل بازیابی رمز عبور ارسال شد.',
+                         'activation_code': user.activation_code
+                         }, status=status.HTTP_200_OK)
 
 
 class ResetPasswordAPIView(generics.GenericAPIView):
@@ -132,7 +132,7 @@ class ResetPasswordAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response({'detail': 'رمز عبور با موفقیت تغییر کرد.'}, status=status.HTTP_200_OK)
+        return Response({"success": 1, 'detail': 'رمز عبور با موفقیت تغییر کرد.'}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

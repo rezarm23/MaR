@@ -45,7 +45,7 @@ class AdminUserDeleteView(DestroyAPIView):
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser]  # فقط ادمین‌ها دسترسی دارند
+    permission_classes = [permissions.IsAdminUser]
 
 
 class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
