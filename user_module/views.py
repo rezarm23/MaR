@@ -50,15 +50,14 @@ class RegisterAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-                "success": 1,
-                'message': 'ثبت نام موفق بود. لطفاً ایمیل خود را برای ادامه روند ثبت نام و فعال‌سازی حساب چک کنید.',
-                'user': {
-                    'username': user.username,
-                    'email': user.email,
-                    'phone_number': user.phone_number,
-                    'activation_code': user.activation_code
-                }
-            }, status.HTTP_201_CREATED)
+            'message': 'ثبت نام موفق بود. لطفاً ایمیل خود را برای ادامه روند ثبت نام و فعال‌سازی حساب چک کنید.',
+            'user': {
+                'username': user.username,
+                'email': user.email,
+                'phone_number': user.phone_number,
+                'activation_code': user.activation_code
+            }
+        }, status.HTTP_201_CREATED)
 
 
 class ActivateUserAPIView(APIView):
@@ -138,3 +137,12 @@ class ResetPasswordAPIView(generics.GenericAPIView):
 def user_info_view(request):
     serializer = UserInfoSerializer(request.user)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    response = Response({"success": 1, 'message': 'Logged out successfully'}, status=200)
+    response.delete_cookie('access')
+    response.delete_cookie('refresh')
+    return response
