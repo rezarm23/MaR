@@ -50,6 +50,7 @@ class RegisterAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
+                "success": 1,
                 'message': 'ثبت نام موفق بود. لطفاً ایمیل خود را برای ادامه روند ثبت نام و فعال‌سازی حساب چک کنید.',
                 'user': {
                     'username': user.username,

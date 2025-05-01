@@ -4,7 +4,6 @@ from rest_framework import status as drf_status
 
 
 def custom_exception_handler(exc, context):
-    print("🚨 custom_exception_handler CALLED")
     response = exception_handler(exc, context)
 
     if response is not None:
