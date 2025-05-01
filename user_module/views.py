@@ -47,10 +47,9 @@ class RegisterAPIView(APIView):
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
                 'message': 'ثبت نام موفق بود. لطفاً ایمیل خود را برای ادامه روند ثبت نام و فعال‌سازی حساب چک کنید.',
                 'user': {
                     'username': user.username,
@@ -59,8 +58,6 @@ class RegisterAPIView(APIView):
                     'activation_code': user.activation_code
                 }
             }, status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ActivateUserAPIView(APIView):
