@@ -18,12 +18,12 @@ def custom_exception_handler(exc, context):
 
         return Response({
             'success': 0,
-            'message': "خطایی رخ داده است." if not error_messages else error_messages[0],
+            'message': "An error has occurred." if not error_messages else error_messages[0],
             'errors': error_messages
         }, status=response.status_code)
 
     return Response({
         'success': 0,
-        'message': 'خطای ناشناخته. لطفاً بعداً تلاش کنید.',
+        'message': 'Unknown error. Please try again later.',
         'errors': [str(exc)]
     }, status=drf_status.HTTP_500_INTERNAL_SERVER_ERROR)

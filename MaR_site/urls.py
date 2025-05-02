@@ -22,19 +22,20 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('product/', include('product_module.urls')),
-    path('order/', include('order_module.urls')),
-    path('user/', include('user_module.urls')),
-    path('admin-panel/', include('admin_panel_module.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('auth-token/', obtain_auth_token, name='auth_token_page'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-]
+                  path('admin/', admin.site.urls),
+                  path('product/', include('product_module.urls')),
+                  path('order/', include('order_module.urls')),
+                  path('user/', include('user_module.urls')),
+                  path('admin-panel/', include('admin_panel_module.urls')),
+                  path('api-auth/', include('rest_framework.urls')),
+                  path('auth-token/', obtain_auth_token, name='auth_token_page'),
+                  path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+                  path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+                  path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+                  path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+                  path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

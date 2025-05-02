@@ -21,8 +21,10 @@ class AdminDashboardSummaryView(APIView):
         total_products = Product.objects.count()
 
         return Response({
-            "total_users": total_users,
-            "total_products": total_products
+            "summary": {
+                "total_users": total_users,
+                "total_products": total_products
+            }
         })
 
 
@@ -38,7 +40,7 @@ class AdminUserDeleteView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         if instance.is_staff or instance.is_superuser:
-            raise PermissionDenied("نمی‌توان ادمین یا سوپر یوزر را حذف کرد.")
+            raise PermissionDenied("You cannot remove the admin or superuser.")
         instance.delete()
 
 

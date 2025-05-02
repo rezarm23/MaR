@@ -41,6 +41,7 @@ class Product(models.Model):
     categories = models.ManyToManyField(ProductCategory, related_name='products')
     discount_price = models.PositiveIntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='product_images/', null=True, blank=True)
 
     def get_final_price(self):
         return self.discount_price if self.discount_price else self.price
@@ -59,7 +60,6 @@ class Product(models.Model):
             counter += 1
 
         super(Product, self).save(*args, **kwargs)
-
 
     def __str__(self):
         return self.title

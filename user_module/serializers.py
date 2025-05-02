@@ -20,25 +20,25 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user = self.instance
         if value != user.email:
             if User.objects.filter(email=value).exclude(id=user.id).exists():
-                raise serializers.ValidationError("این ایمیل قبلاً ثبت شده.")
+                raise serializers.ValidationError("This email has already been registered.")
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", value):
-            raise serializers.ValidationError("فرمت ایمیل معتبر نیست.")
+            raise serializers.ValidationError("The email format is not valid.")
         return value
 
     def validate_username(self, value):
         user = self.instance
         if value != user.username:
             if User.objects.filter(username=value).exclude(id=user.id).exists():
-                raise serializers.ValidationError("این نام کاربری قبلاً استفاده شده.")
+                raise serializers.ValidationError("This username has already been used.")
         return value
 
     def validate_phone_number(self, value):
         user = self.instance
         if value != user.phone_number:
             if User.objects.filter(phone_number=value).exclude(id=user.id).exists():
-                raise serializers.ValidationError("این شماره تلفن قبلاً ثبت شده.")
+                raise serializers.ValidationError("This phone number is already registered.")
         if not re.fullmatch(r"^09\d{9}$", str(value)):
-            raise serializers.ValidationError("شماره باید 11 رقمی و با 09 شروع شود.")
+            raise serializers.ValidationError("The number must be 11 digits and start with 09.")
         return value
 
 
@@ -48,11 +48,11 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate_new_password(self, value):
         if len(value) < 8:
-            raise serializers.ValidationError("رمز عبور باید حداقل ۸ کاراکتر باشد.")
+            raise serializers.ValidationError("The password must be at least 8 characters long.")
         if not re.search(r'\d', value):
-            raise serializers.ValidationError("باید حداقل یک عدد داشته باشد.")
+            raise serializers.ValidationError("It must have at least one number.")
         if not re.search(r'[A-Za-z]', value):
-            raise serializers.ValidationError("باید حداقل یک حرف داشته باشد.")
+            raise serializers.ValidationError("It must have at least one letter.")
         return value
 
     def save(self):
@@ -61,10 +61,10 @@ class ChangePasswordSerializer(serializers.Serializer):
         new_password = self.initial_data['new_password']
 
         if not user.check_password(old_password):
-            raise serializers.ValidationError("رمز عبور قدیمی اشتباه است.")
+            raise serializers.ValidationError("The old password is incorrect.")
 
         if user.check_password(new_password):
-            raise serializers.ValidationError("رمز عبور جدید نمی‌تواند با رمز عبور قدیمی یکسان باشد.")
+            raise serializers.ValidationError("The new password cannot be the same as the old password.")
 
         user.set_password(new_password)
         user.save()
@@ -80,21 +80,21 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", value):
-            raise serializers.ValidationError("فرمت ایمیل معتبر نیست.")
+            raise serializers.ValidationError("The email format is not valid.")
         if not value:
-            raise serializers.ValidationError("ایمیل باید وارد شود.")
+            raise serializers.ValidationError("Email must be entered.")
         return validate_unique_field(User, "email", value)
 
     def validate_phone_number(self, value):
         if not re.fullmatch(r"^09\d{9}$", str(value)):
-            raise serializers.ValidationError("شماره باید 11 رقمی و با 09 شروع شود.")
+            raise serializers.ValidationError("The number must be 11 digits and start with 09.")
         if not value:
-            raise serializers.ValidationError("شماره تلفن باید وارد شود.")
+            raise serializers.ValidationError("A phone number must be entered.")
         return validate_unique_field(User, "phone_number", value)
 
     def validate_username(self, value):
         if not value:
-            raise serializers.ValidationError("نام کاربری باید وارد شود.")
+            raise serializers.ValidationError("Username must be entered.")
         return validate_unique_field(User, "username", value)
 
     def validate_password(self, value):
@@ -133,7 +133,7 @@ class LoginSerializer(serializers.Serializer):
                 pass
 
         if not user:
-            raise serializers.ValidationError("نام کاربری/ایمیل یا رمز عبور اشتباه است.")
+            raise serializers.ValidationError("The username/email or password is incorrect.")
 
         attrs['user'] = user
         return attrs
@@ -145,7 +145,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
     def validate_email(self, value):
         User = get_user_model()
         if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError('کاربری با این ایمیل پیدا نشد.')
+            raise serializers.ValidationError('No user with this email was found.')
         return value
 
 
@@ -158,7 +158,7 @@ class ResetPasswordSerializer(serializers.Serializer):
         password_confirm = attrs.get('password_confirm')
 
         if password != password_confirm:
-            raise serializers.ValidationError('رمز عبور و تکرار آن یکسان نیستند.')
+            raise serializers.ValidationError('The password and its repetition are not the same.')
 
         validate_password_strength(password)
 
@@ -170,10 +170,10 @@ class ResetPasswordSerializer(serializers.Serializer):
         try:
             user = User.objects.get(activation_code=activation_code)
         except User.DoesNotExist:
-            raise serializers.ValidationError('کد فعال‌سازی معتبر نیست.')
+            raise serializers.ValidationError('The activation code is not valid.')
 
         if user.activation_code_expiration and timezone.now() > user.activation_code_expiration:
-            return Response({"detail": "کد فعالسازی منقضی شده است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The activation code has expired."}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(self.validated_data['password'])
         user.activation_code = None

@@ -39,7 +39,7 @@ class ChangePasswordAPIView(APIView):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response({"success": 1, "message": "رمز عبور با موفقیت تغییر کرد."}, status.HTTP_200_OK)
+            return Response({"success": 1, "message": "Password changed successfully."}, status.HTTP_200_OK)
 
 
 class RegisterAPIView(APIView):
@@ -50,7 +50,7 @@ class RegisterAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-            'message': 'ثبت نام موفق بود. لطفاً ایمیل خود را برای ادامه روند ثبت نام و فعال‌سازی حساب چک کنید.',
+            'message': 'Registration was successful. Please check your email to continue the registration process and activate your account.',
             'user': {
                 'username': user.username,
                 'email': user.email,
@@ -65,20 +65,20 @@ class ActivateUserAPIView(APIView):
         try:
             user = User.objects.get(activation_code=activation_code)
         except User.DoesNotExist:
-            return Response({"detail": "کد فعالسازی معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The activation code is not valid."}, status=status.HTTP_400_BAD_REQUEST)
 
         if user.activation_code_expiration and timezone.now() > user.activation_code_expiration:
-            return Response({"detail": "کد فعالسازی منقضی شده است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The activation code has expired."}, status=status.HTTP_400_BAD_REQUEST)
 
         if user.is_active:
-            return Response({"detail": "حساب کاربری قبلاً فعال شده است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The account has already been activated."}, status=status.HTTP_400_BAD_REQUEST)
 
         user.is_active = True
         user.activation_code = None
         user.activation_code_expiration = None
         user.save()
 
-        return Response({"success": 1, "detail": "حساب کاربری با موفقیت فعال شد."}, status=status.HTTP_200_OK)
+        return Response({"success": 1, "detail": "The account was successfully activated."}, status=status.HTTP_200_OK)
 
 
 class LoginAPIView(APIView):
@@ -110,7 +110,7 @@ class ForgetPasswordAPIView(APIView):
         send_reset_password_email(user)
 
         return Response({"success": 1,
-                         'detail': 'ایمیل بازیابی رمز عبور ارسال شد.',
+                         'detail': 'Password recovery email sent.',
                          'activation_code': user.activation_code
                          }, status=status.HTTP_200_OK)
 
@@ -123,13 +123,15 @@ class ResetPasswordAPIView(generics.GenericAPIView):
         try:
             user = User.objects.get(activation_code=activation_code)
         except User.DoesNotExist:
-            return Response({'error': 'کد فعال‌سازی معتبر نیست.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'The activation code is not valid.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user.activation_code_expiration < timezone.now():
+            return Response({'error': 'The activation code has expired.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data, context={'activation_code': activation_code})
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response({"success": 1, 'detail': 'رمز عبور با موفقیت تغییر کرد.'}, status=status.HTTP_200_OK)
+        return Response({"success": 1, 'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
