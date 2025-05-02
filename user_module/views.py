@@ -88,11 +88,23 @@ class LoginAPIView(APIView):
 
         user = serializer.validated_data['user']
         refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
-        return Response({"success": 1,
-                         'refresh': str(refresh),
-                         'access': str(refresh.access_token),
-                         }, status=status.HTTP_200_OK)
+        response = Response({
+            "success": 1,
+            "refresh": str(refresh),
+            "access": access_token,
+        }, status=status.HTTP_200_OK)
+
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            secure=False,
+            samesite='Lax'
+        )
+
+        return response
 
 
 class ForgetPasswordAPIView(APIView):
