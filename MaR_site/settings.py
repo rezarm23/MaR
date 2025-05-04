@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rc8^&hp^zgpu1r12=ox7*7ly=_w6lm*)l!-uuq5p1#6k$um7b('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['api.mander.ir', 'mander.ir', 'localhost', '127.0.0.1', "185.53.143.74"]
 
