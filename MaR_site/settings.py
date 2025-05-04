@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rc8^&hp^zgpu1r12=ox7*7ly=_w6lm*)l!-uuq5p1#6k$um7b('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('RENDER', None) is None  # True فقط روی لوکال
+DEBUG = True
 
-ALLOWED_HOSTS = ['https://mar-9oop.onrender.com', 'localhost', '.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['api.mander.ir', 'mander.ir', 'localhost', '127.0.0.1', "185.53.143.74"]
 
 # Application definition
 
@@ -87,12 +87,22 @@ WSGI_APPLICATION = 'MaR_site.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'manderir_mar_site_db',
+        'USER': 'manderir_mar_site_user',
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': '127.0.0.200',
+        'PORT': '5432',
+    }
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+SITE_URL = 'https://api.mander.ir'
+FRONTEND_URL = 'http://localhost:3000'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -167,11 +177,23 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+#
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

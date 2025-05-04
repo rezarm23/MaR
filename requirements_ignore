@@ -1,0 +1,13 @@
+autobahn==24.4.2
+Automat==25.4.16
+constantly==23.10.4
+daphne==4.1.2
+hyperlink==21.0.0
+incremental==24.7.2
+pyasn1==0.6.1
+pyasn1_modules==0.4.2
+Twisted==24.11.0
+txaio==23.1.1
+zope.interface==7.2
+pyOpenSSL==25.0.0
+service-identity==24.2.0

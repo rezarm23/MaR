@@ -1,6 +1,8 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import generics
@@ -81,6 +83,17 @@ class ActivateUserAPIView(APIView):
         return Response({"success": 1, "detail": "The account was successfully activated."}, status=status.HTTP_200_OK)
 
 
+def activate_user_redirect(request, activation_code):
+    api_views = ActivateUserAPIView()
+    response = api_views.get(request, activation_code)
+
+    if response.status_code == status.HTTP_200_OK and response.data.get("success") == 1:
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/activate?code={activation_code}")
+    else:
+        error_message = response.data.get("detail", "Activation failed.")
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/activate?error={error_message}")
+
+
 class LoginAPIView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -145,6 +158,18 @@ class ResetPasswordAPIView(generics.GenericAPIView):
 
         return Response({"success": 1, 'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
 
+
+def reset_password_redirect(request, activation_code):
+    User = get_user_model()
+    try:
+        user = User.objects.get(activation_code=activation_code)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/reset-password?error=The activation code is not valid.")
+
+    if user.activation_code_expiration < timezone.now():
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/reset-password?error=The activation code has expired.")
+
+    return HttpResponseRedirect(f"{settings.FRONTEND_URL}/reset-password?code={activation_code}")
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

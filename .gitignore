@@ -1,0 +1,28 @@
+*.pyc
+__pycache__/
+env/
+venv/
+*.egg-info/
+
+# فایل‌های حساس
+.env
+*.env
+
+# فایل‌های دیتابیس لوکال
+*.sqlite3
+*.db
+db.sqlite3
+
+# فایل‌های استاتیک و مدیا جمع‌آوری‌شده
+/staticfiles/
+/media/
+
+# لاگ‌ها و فایل‌های موقت
+*.log
+*.pid
+
+# فایل‌های خاص cPanel
+passenger_wsgi.py
+
+
+requirements_ignore
